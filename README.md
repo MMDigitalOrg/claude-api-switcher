@@ -1,6 +1,13 @@
 # Claude API Switcher
 
-A simple CLI tool to switch between using Anthropic API through a proxy endpoint and the official Anthropic API directly for Claude Code.
+A CLI tool to switch between using Anthropic API through a proxy endpoint (GLM models) and the official Anthropic API directly (Claude models) for Claude Code.
+
+## Features
+
+- **API Endpoint Switching**: Toggle between proxy and direct Anthropic API
+- **Vision MCP Management**: Automatically enables/disables Vision MCP based on model capabilities
+- **Smart Coordination**: Ensures API mode and MCP configuration stay in sync
+- **Status Reporting**: Shows current mode with warnings for mismatched states
 
 ## Installation
 
@@ -25,18 +32,29 @@ npm install -g .
 ## Usage
 
 ```bash
-claude-api-switch proxy     # Switch to proxy endpoint
-claude-api-switch direct    # Switch to direct Anthropic API
-claude-api-switch status    # Show current mode
+claude-api-switch proxy     # Switch to proxy + enable Vision MCP (GLM models)
+claude-api-switch direct    # Switch to direct Anthropic API + disable Vision MCP (Claude models)
+claude-api-switch status    # Show current mode and Vision MCP status
 ```
 
 ## What It Does
 
-This tool modifies your Claude Code settings at `~/.claude/settings.json`:
+This tool modifies your Claude Code configuration:
 
-- **Proxy mode**: Sets `ANTHROPIC_BASE_URL` to `https://api.z.ai/api/anthropic`
-- **Direct mode**: Removes `ANTHROPIC_BASE_URL` entirely (uses default Anthropic endpoint)
-- **Status**: Shows the current mode and proxy URL (if in proxy mode)
+**API Configuration** (`~/.claude/settings.json`):
+- **Proxy mode**: Sets `ANTHROPIC_BASE_URL` to `https://api.z.ai/api/anthropic` (GLM models)
+- **Direct mode**: Removes `ANTHROPIC_BASE_URL` (uses default Anthropic endpoint - Claude models)
+
+**MCP Server Configuration** (`~/.claude.json`):
+- **Proxy mode**: Enables `zai-mcp-server` (Vision MCP) for image understanding
+- **Direct mode**: Disables `zai-mcp-server` (Claude models are natively multi-modal)
+
+## Model Capabilities
+
+| API Mode | Models | Multi-modal | Vision MCP |
+|----------|--------|-------------|-------------|
+| Proxy | GLM | No | ✅ Enabled |
+| Direct | Claude (Opus 4.7, Sonnet 4.6) | Yes | ❌ Disabled |
 
 ## Setup for Different Computers
 
