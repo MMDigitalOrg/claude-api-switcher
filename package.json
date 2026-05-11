@@ -1,5 +1,5 @@
 {
-  "name": "claude-api-switcher",
+  "name": "@mmdigitalorg/claude-api-switcher",
   "version": "1.0.0",
   "description": "CLI tool to switch between proxy and direct Anthropic API for Claude Code",
   "main": "index.js",

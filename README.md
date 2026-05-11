@@ -16,7 +16,7 @@ npx claude-api-switcher status
 
 ### Clone and Install Locally
 ```bash
-git clone <repo-url>
+git clone https://github.com/MMDigitalOrg/claude-api-switcher.git
 cd claude-api-switcher
 npm install -g .
 ```
@@ -39,15 +39,19 @@ This tool modifies your Claude Code settings at `~/.claude/settings.json`:
 
 ## Setup for Different Computers
 
-1. Push this repo to GitHub
-2. On each computer:
+On each computer:
+
+1. **Install globally:**
    ```bash
-   npm install -g <your-github-username>/claude-api-switcher
+   npm install -g @mmdigitalorg/claude-api-switcher
    ```
-   Or use npx without installation:
+
+2. **Or use npx without installation:**
    ```bash
-   npx <your-github-username>/claude-api-switcher status
+   npx @mmdigitalorg/claude-api-switcher status
    ```
+
+**Repo:** https://github.com/MMDigitalOrg/claude-api-switcher
 
 ## License
 
