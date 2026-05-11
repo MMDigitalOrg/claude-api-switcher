@@ -6,12 +6,12 @@ A simple CLI tool to switch between using Anthropic API through a proxy endpoint
 
 ### Global Install
 ```bash
-npm install -g claude-api-switcher
+npm install -g github:MMDigitalOrg/claude-api-switcher
 ```
 
 ### Run with npx (no installation needed)
 ```bash
-npx claude-api-switcher status
+npx github:MMDigitalOrg/claude-api-switcher status
 ```
 
 ### Clone and Install Locally
@@ -19,6 +19,7 @@ npx claude-api-switcher status
 git clone https://github.com/MMDigitalOrg/claude-api-switcher.git
 cd claude-api-switcher
 npm install -g .
+# This installs as @mmdigitalorg/claude-api-switcher
 ```
 
 ## Usage
@@ -41,17 +42,19 @@ This tool modifies your Claude Code settings at `~/.claude/settings.json`:
 
 On each computer:
 
-1. **Install globally:**
+1. **Install directly from GitHub:**
    ```bash
-   npm install -g @mmdigitalorg/claude-api-switcher
+   npm install -g github:MMDigitalOrg/claude-api-switcher
    ```
 
 2. **Or use npx without installation:**
    ```bash
-   npx @mmdigitalorg/claude-api-switcher status
+   npx github:MMDigitalOrg/claude-api-switcher status
    ```
 
 **Repo:** https://github.com/MMDigitalOrg/claude-api-switcher
+
+**Package Name:** `@mmdigitalorg/claude-api-switcher` (scoped to MMDigitalOrg organization)
 
 ## License
 
