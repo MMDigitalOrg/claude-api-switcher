@@ -344,13 +344,22 @@ function main() {
     return;
   }
 
-  if (!modelArgument) {
-    console.log('Usage: claude-api-switch <model>');
-    console.log('Available models:', MODEL_KEYS.join(', '));
-    process.exit(1);
+  // Treat the argument as a model name if it's a valid model
+  if (MODELS[command]) {
+    switchModel(command);
+    return;
   }
 
-  switchModel(modelArgument);
+  console.log(`Unknown command: ${command}`);
+  console.log('Usage: claude-api-switch <command>');
+  console.log('Commands:');
+  console.log('  list       - List available models');
+  console.log('  status     - Show current model + status');
+  console.log('  setup <model> - Configure API key for a model');
+  console.log('  <model>    - Switch to specific model');
+  console.log('');
+  console.log('Available models:', MODEL_KEYS.join(', '));
+  process.exit(1);
 }
 
 main();
