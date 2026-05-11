@@ -1,0 +1,23 @@
+{
+  "name": "claude-api-switcher",
+  "version": "1.0.0",
+  "description": "CLI tool to switch between proxy and direct Anthropic API for Claude Code",
+  "main": "index.js",
+  "bin": {
+    "claude-api-switch": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "node bin/cli.js status"
+  },
+  "keywords": [
+    "claude",
+    "anthropic",
+    "api",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  }
+}
