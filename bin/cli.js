@@ -58,10 +58,11 @@ const MODELS = {
 
 const COMMANDS = ['list', 'status', 'setup'];
 const MODEL_KEYS = Object.keys(MODELS);
+const ALL_COMMANDS = [...COMMANDS, ...MODEL_KEYS];
 const command = process.argv[2];
 const modelArgument = process.argv[3];
 
-if (!command || !COMMANDS.includes(command)) {
+if (!command || !ALL_COMMANDS.includes(command)) {
   console.log('Usage: claude-api-switch <command>');
   console.log('Commands:');
   console.log('  list       - List available models');
@@ -157,23 +158,20 @@ function getVisionMcpStatus(claudeJson, modelKey) {
   return 'disabled';
 }
 
-function enableVisionMcp(claudeJson, modelKey) {
+function enableVisionMcp(claudeJson) {
   if (!claudeJson.mcpServers) {
     claudeJson.mcpServers = {};
   }
 
-  const modelConfig = MODELS[modelKey];
-  if (modelConfig.visionMcp) {
-    claudeJson.mcpServers[modelConfig.visionMcp] = {
-      type: 'stdio',
-      command: 'npx',
-      args: ['-y', '@z_ai/mcp-server'],
-      env: {
-        Z_AI_MODE: 'ZAI',
-        Z_AI_API_KEY: claudeJson.mcpServers[modelConfig.visionMcp]?.env?.Z_AI_API_KEY || process.env.Z_AI_API_KEY
-      }
-    };
-  }
+  claudeJson.mcpServers[VISION_MCP_NAME] = {
+    type: 'stdio',
+    command: 'npx',
+    args: ['-y', '@z_ai/mcp-server'],
+    env: {
+      Z_AI_MODE: 'ZAI',
+      Z_AI_API_KEY: claudeJson.mcpServers[VISION_MCP_NAME]?.env?.Z_AI_API_KEY || process.env.Z_AI_API_KEY
+    }
+  };
 }
 
 function disableVisionMcp(claudeJson) {
@@ -185,8 +183,8 @@ function disableVisionMcp(claudeJson) {
 function setupApiKey(modelKey) {
   const modelConfig = MODELS[modelKey];
 
-  console.log(`\n📝 Setup API key for ${modelConfig.name}`);
-  console.log(`API Key Environment Variable: ${modelConfig.apiKeyEnv}\n`);
+  console.log(`Setup API key for ${modelConfig.name}`);
+  console.log(`API Key Environment Variable: ${modelConfig.apiKeyEnv}`);
 
   const rl = readline.createInterface({
     input: process.stdin,
@@ -195,7 +193,7 @@ function setupApiKey(modelKey) {
 
   rl.question(`Enter your ${modelConfig.name} API key: `, (apiKey) => {
     if (!apiKey || apiKey.trim() === '') {
-      console.log('❌ API key cannot be empty. Setup cancelled.');
+      console.log('API key cannot be empty. Setup cancelled.');
       rl.close();
       process.exit(1);
     }
@@ -208,20 +206,20 @@ function setupApiKey(modelKey) {
     settings.env[modelConfig.apiKeyEnv] = apiKey.trim();
     writeSettings(settings);
 
-    console.log(`✓ API key saved for ${modelConfig.name}`);
+    console.log(`API key saved for ${modelConfig.name}`);
     console.log(`Stored in: ${modelConfig.apiKeyEnv}`);
     rl.close();
   });
 }
 
 function listModels() {
-  console.log('\n📋 Available AI Models:\n');
+  console.log('\nAvailable AI Models:\n');
 
   for (const [modelKey, modelConfig] of Object.entries(MODELS)) {
-    const multiModalStatus = modelConfig.multiModal ? '✅ Native multi-modal' : '❌ Text-only (needs Vision MCP)';
+    const multiModalStatus = modelConfig.multiModal ? 'Native multi-modal' : 'Text-only (needs Vision MCP)';
     const endpoint = modelConfig.defaultEndpoint || 'default Anthropic endpoint';
 
-    console.log(`  ${modelKey}`);
+    console.log(` ${modelKey}`);
     console.log(`  Name: ${modelConfig.name}`);
     console.log(`  Multi-modal: ${multiModalStatus}`);
     console.log(`  API Endpoint: ${endpoint}`);
@@ -235,7 +233,7 @@ function showStatus() {
   const claudeJson = readClaudeJson();
   const currentModel = getCurrentModel(settings);
 
-  console.log('\n📊 Current Configuration:\n');
+  console.log('\nCurrent Configuration:\n');
 
   if (currentModel) {
     const modelConfig = MODELS[currentModel];
@@ -246,11 +244,11 @@ function showStatus() {
     console.log(`Model Name: ${modelConfig.modelName}`);
 
     const apiKeyStatus = getApiKeyStatus(settings, currentModel);
-    const apiKeyDisplay = apiKeyStatus === 'configured' ? '✓ Configured' : '❌ Not configured';
+    const apiKeyDisplay = apiKeyStatus === 'configured' ? 'Configured' : 'Not configured';
     console.log(`API Key: ${apiKeyDisplay} (${modelConfig.apiKeyEnv})`);
 
     const visionMcpStatus = getVisionMcpStatus(claudeJson, currentModel);
-    const visionMcpDisplay = visionMcpStatus === 'enabled' ? '✓ Enabled' : '❌ Disabled';
+    const visionMcpDisplay = visionMcpStatus === 'enabled' ? 'Enabled' : 'Disabled';
     console.log(`Vision MCP: ${visionMcpDisplay}`);
 
     if (modelConfig.multiModal) {
@@ -269,7 +267,7 @@ function switchModel(modelKey) {
   const modelConfig = MODELS[modelKey];
 
   if (!modelConfig) {
-    console.log(`❌ Unknown model: ${modelKey}`);
+    console.log(`Unknown model: ${modelKey}`);
     console.log('Available models:', MODEL_KEYS.join(', '));
     process.exit(1);
   }
@@ -283,7 +281,7 @@ function switchModel(modelKey) {
 
   const apiKey = settings.env[modelConfig.apiKeyEnv];
   if (!apiKey) {
-    console.log(`❌ API key not configured for ${modelConfig.name}`);
+    console.log(`API key not configured for ${modelConfig.name}`);
     console.log(`Please run: claude-api-switch setup ${modelKey}`);
     console.log(`Environment variable: ${modelConfig.apiKeyEnv}`);
     process.exit(1);
@@ -301,16 +299,16 @@ function switchModel(modelKey) {
 
   if (modelConfig.multiModal) {
     disableVisionMcp(claudeJson);
-    console.log('✓ Vision MCP disabled (native multi-modal)');
+    console.log('Vision MCP disabled (native multi-modal)');
   } else {
     enableVisionMcp(claudeJson);
-    console.log('✓ Vision MCP enabled (for image understanding)');
+    console.log('Vision MCP enabled (for image understanding)');
   }
 
   writeSettings(settings);
   writeClaudeJson(claudeJson);
 
-  console.log(`✓ Successfully switched to ${modelConfig.name}`);
+  console.log(`Successfully switched to ${modelConfig.name}`);
   console.log(`API Key: ${modelConfig.apiKeyEnv}`);
 
   if (modelConfig.apiEndpointEnv && settings.env[modelConfig.apiEndpointEnv]) {
@@ -337,7 +335,7 @@ function main() {
     }
 
     if (!MODELS[modelArgument]) {
-      console.log(`❌ Unknown model: ${modelArgument}`);
+      console.log(`Unknown model: ${modelArgument}`);
       console.log('Available models:', MODEL_KEYS.join(', '));
       process.exit(1);
     }
